@@ -6,12 +6,7 @@
     <title>DMD 数据模型与决策 | 清华大学 MBA</title>
     
     <!-- 预连接优化 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.google-analytics.com">
-    
-    <!-- DNS预获取 -->
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VRZ3B14HZ6"></script>
@@ -25,24 +20,24 @@
     <!-- 样式表 - 本地优先 -->
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- 字体加载 - 带fallback -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- 移除外部字体和图标库依赖 -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Font Awesome - 带fallback -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"></noscript>
+    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"></noscript> -->
     
     <!-- 内联关键CSS样式 - 确保基础样式在外部资源失败时仍可用 -->
     <style>
         /* 关键样式 - 确保页面基本可用 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", 'Segoe UI', Roboto, sans-serif; 
             line-height: 1.6; 
             color: #333; 
             background: #fff;
             overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
         .navbar { 
@@ -51,9 +46,8 @@
             left: 0; 
             right: 0; 
             background: rgba(255,255,255,0.95); 
-            backdrop-filter: blur(10px);
-            z-index: 1000; 
             border-bottom: 1px solid #e5e7eb;
+            z-index: 1000; 
         }
         .nav-container { 
             display: flex; 
@@ -75,6 +69,19 @@
         .btn-primary { background: #6B4C93; color: white; }
         .btn-secondary { background: white; color: #6B4C93; border: 1px solid #6B4C93; }
         
+        /* 替换图标字体为简单符号 */
+        .fas.fa-download::before { content: "⬇ "; }
+        .fas.fa-external-link-alt::before { content: "↗ "; }
+        .fas.fa-book::before { content: "📚 "; }
+        .fas.fa-file-powerpoint::before { content: "📊 "; }
+        .fas.fa-sticky-note::before { content: "📝 "; }
+        .fas.fa-user::before { content: "👤 "; }
+        .fas.fa-envelope::before { content: "✉ "; }
+        .fas.fa-user-graduate::before { content: "🎓 "; }
+        .fas.fa-chalkboard-teacher::before { content: "👨‍🏫 "; }
+        .fas.fa-user-cog::before { content: "⚙ "; }
+        .fas.fa-arrow-right::before { content: "→"; }
+        
         /* 移动端优化 */
         @media (max-width: 768px) {
             .nav-menu { display: none; }
@@ -94,6 +101,9 @@
             border-radius: 0.5rem; 
             margin: 1rem;
         }
+        
+        /* 汉堡菜单图标 */
+        .nav-toggle span::before { content: "☰"; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -126,331 +136,317 @@
         window.addEventListener('offline', checkConnection);
     </script>
 
-    <!-- 顶部导航 -->
+    <!-- 导航栏 -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <svg class="university-logo" width="40" height="40" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="18" fill="none" stroke="#6B4C93" stroke-width="2"/>
-                    <polygon points="12,16 20,8 28,16 28,32 12,32" fill="#6B4C93"/>
-                    <rect x="16" y="20" width="8" height="8" fill="white"/>
-                    <rect x="18" y="22" width="4" height="4" fill="#6B4C93"/>
-                </svg>
-                <div class="brand-text">
-                    <span class="university">THU</span>
-                    <span class="program">DMD</span>
-                </div>
+                <a href="#hero" class="brand-link">DMD</a>
             </div>
-            
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link active">首页</a></li>
-                <li><a href="#syllabus" class="nav-link">教学日历</a></li>
-                <li><a href="#resources" class="nav-link">学习资源</a></li>
-                <li><a href="#contact" class="nav-link">联系老师</a></li>
-            </ul>
-            
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#about" class="nav-link">课程介绍</a>
+                <a href="#schedule" class="nav-link">教学日历</a>
+                <a href="pages/resources.html" class="nav-link">学习资源</a>
+                <a href="#contact" class="nav-link">联系我们</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
                 <span></span>
             </div>
         </div>
     </nav>
 
-    <!-- 英雄区域 -->
-    <section class="hero" id="home">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span>2025年</span>
-                </div>
-                <h1 class="hero-title">
-                    数据模型与决策
-                    <span class="subtitle">Data, Models & Decisions</span>
-                </h1>
-                <p class="hero-description">
-                    探索数据科学在商业决策中的核心应用，掌握量化分析方法，
-                    培养基于数据的战略思维和决策能力。
-                </p>
-                <div class="hero-buttons">
-                    <a href="https://tsinghua.yuketang.cn" class="btn btn-primary">线上学习</a>
-                    <a href="#resources" class="btn btn-secondary">
-                        <i class="fas fa-download"></i>
-                        下载资料
-                    </a>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span class="stat-number">4</span>
-                        <span class="stat-label">次线下课堂</span>
+    <!-- 主页面内容 -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">DMD 数据模型与决策</h1>
+                        <h2 class="hero-subtitle">清华大学 MBA 课程 | 25P4班</h2>
+                        <p class="hero-description">
+                            掌握数据建模技能，提升商业决策能力。通过系统学习统计学、概率论和决策分析，
+                            培养基于数据的科学决策思维。
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#schedule" class="btn btn-primary">
+                                <i class="fas fa-calendar-alt"></i>
+                                查看教学日历
+                            </a>
+                            <a href="pages/resources.html" class="btn btn-secondary">
+                                <i class="fas fa-book"></i>
+                                学习资源
+                            </a>
+                        </div>
                     </div>
-                    <div class="stat">
-                        <span class="stat-number">11</span>
-                        <span class="stat-label">周课程</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1</span>
-                        <span class="stat-label">次期末考试</span>
+                    <div class="hero-image">
+                        <div class="hero-visual">
+                            <div class="data-visualization">
+                                <div class="chart-bars">
+                                    <div class="bar" style="height: 60%;"></div>
+                                    <div class="bar" style="height: 80%;"></div>
+                                    <div class="bar" style="height: 45%;"></div>
+                                    <div class="bar" style="height: 90%;"></div>
+                                    <div class="bar" style="height: 70%;"></div>
+                                </div>
+                                <div class="scatter-dots">
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="hero-visual">
-                <div class="data-visualization">
-                    <svg width="500" height="400" viewBox="0 0 500 400">
-                        <!-- 背景网格 -->
-                        <defs>
-                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E5E7EB" stroke-width="0.5"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#grid)"/>
-                        
-                        <!-- 数据点和连线 -->
-                        <g class="chart-lines">
-                            <path d="M50,350 Q150,200 250,180 T450,120" stroke="#3B82F6" stroke-width="3" fill="none"/>
-                            <path d="M50,300 Q150,250 250,220 T450,160" stroke="#10B981" stroke-width="3" fill="none"/>
-                            <path d="M50,320 Q150,280 250,250 T450,200" stroke="#F59E0B" stroke-width="3" fill="none"/>
-                        </g>
-                        
-                        <!-- 数据点 -->
-                        <g class="chart-points">
-                            <circle cx="50" cy="350" r="4" fill="#3B82F6"/>
-                            <circle cx="150" cy="280" r="4" fill="#3B82F6"/>
-                            <circle cx="250" cy="180" r="4" fill="#3B82F6"/>
-                            <circle cx="350" cy="140" r="4" fill="#3B82F6"/>
-                            <circle cx="450" cy="120" r="4" fill="#3B82F6"/>
-                        </g>
-                        
-                        <!-- 图表标题 -->
-                        <text x="250" y="30" text-anchor="middle" class="chart-title">Business Intelligence Dashboard</text>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 教学日历 -->
-    <section class="syllabus" id="syllabus">
-        <div class="container">
-            <div class="section-header">
-                <h2>教学日历</h2>
-                <p>25P4班课程安排</p>
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">课程介绍</h2>
+                    <p class="section-subtitle">Data Models and Decisions</p>
+                </div>
+                <div class="about-content">
+                    <div class="about-text">
+                        <div class="about-description">
+                            <p>
+                                《数据模型与决策》是清华大学MBA核心课程之一，旨在培养学生运用定量分析方法解决商业问题的能力。
+                                课程涵盖统计学基础、概率论、回归分析、决策树、蒙特卡洛模拟等核心内容。
+                            </p>
+                            <p>
+                                通过理论学习与实践案例相结合的方式，帮助学生建立数据驱动的思维模式，
+                                提升在不确定环境下的科学决策能力。
+                            </p>
+                        </div>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>统计分析</h3>
+                            <p>掌握描述性统计、推断统计等基础方法</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h3>建模技能</h3>
+                            <p>学习回归分析、决策树等建模方法</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3>决策思维</h3>
+                            <p>培养基于数据的科学决策能力</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <h3>实践应用</h3>
+                            <p>结合商业案例进行实际操作练习</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="schedule-table-wrapper">
-                <table class="schedule-table">
-                    <thead>
-                        <tr>
-                            <th>周次</th>
-                            <th>日期</th>
-                            <th>线上授课内容</th>
-                            <th>线下课堂（25P4班）</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>5月26日-6月1日</td>
-                            <td>绪论·第1章 决策分析</td>
-                            <td class="offline-class">经管学院建华楼LG1-21（地下一层）</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>6月2日-6月8日</td>
-                            <td>第2章（上）概率基础</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>6月9日-6月15日</td>
-                            <td>第2章（下）离散概率分布及其应用</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>6月16日-6月22日</td>
-                            <td>第3章 连续概率分布及其应用</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>6月23日-6月29日</td>
-                            <td>第4章（上）统计抽样1</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>6月30日-7月6日</td>
-                            <td>第4章（下）统计抽样2</td>
-                            <td class="offline-class">
-                                <div class="class-time">7月5日（周六）</div>
-                                <div class="time-detail">8:50-12:10, 14:00-17:20</div>
-                                <div class="class-topic">概率论、统计抽样</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>7月7日-7月13日</td>
-                            <td>第5章 仿真建模</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>7月14日-7月20日</td>
-                            <td>第6章（上）回归模型1</td>
-                            <td class="offline-class">
-                                <div class="class-time">7月19日（周六）</div>
-                                <div class="time-detail">8:50-17:20</div>
-                                <div class="class-topic">仿真建模和回归分析</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>9</td>
-                            <td>7月21日-7月27日</td>
-                            <td>第6章（下）回归模型2</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>7月28日-8月3日</td>
-                            <td>第7章 线性优化</td>
-                            <td class="offline-class">
-                                <div class="class-time">8月2日（周六）</div>
-                                <div class="time-detail">8:50-12:10, 14:00-17:20</div>
-                                <div class="class-topic">线性优化、非线性和整数规划</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>11</td>
-                            <td>8月4日-8月10日</td>
-                            <td>第8章 非线性优化</td>
-                            <td class="no-class">无线下课堂</td>
-                        </tr>
-                        <tr class="exam-row">
-                            <td>期末</td>
-                            <td>9月19日（周五）</td>
-                            <td>期末考试</td>
-                            <td class="exam-info">
-                                <div class="class-time">9月19日（周五）19:00-21:00</div>
-                                <div class="class-topic">地点待定</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 学习资源 -->
-    <section class="resources" id="resources">
-        <div class="container">
-            <div class="section-header">
-                <h2>学习资源</h2>
-                <p>助力你的DMD之旅</p>
+        <!-- Schedule Section -->
+        <section id="schedule" class="schedule">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">教学日历</h2>
+                    <p class="section-subtitle">2024年秋季学期课程安排</p>
+                </div>
+                <div class="schedule-content">
+                    <div class="schedule-table-container">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>周次</th>
+                                    <th>日期</th>
+                                    <th>主题</th>
+                                    <th>内容</th>
+                                    <th>作业</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>第1周</td>
+                                    <td>9月2日</td>
+                                    <td>课程介绍与统计基础</td>
+                                    <td>描述性统计、数据可视化</td>
+                                    <td>练习1</td>
+                                </tr>
+                                <tr>
+                                    <td>第2周</td>
+                                    <td>9月9日</td>
+                                    <td>概率论基础</td>
+                                    <td>概率分布、贝叶斯定理</td>
+                                    <td>练习2</td>
+                                </tr>
+                                <tr>
+                                    <td>第3周</td>
+                                    <td>9月16日</td>
+                                    <td>推断统计</td>
+                                    <td>假设检验、置信区间</td>
+                                    <td>练习3</td>
+                                </tr>
+                                <tr>
+                                    <td>第4周</td>
+                                    <td>9月23日</td>
+                                    <td>回归分析</td>
+                                    <td>简单线性回归、多元回归</td>
+                                    <td>练习4</td>
+                                </tr>
+                                <tr>
+                                    <td>第5周</td>
+                                    <td>9月30日</td>
+                                    <td>决策分析</td>
+                                    <td>决策树、期望值分析</td>
+                                    <td>案例研究1</td>
+                                </tr>
+                                <tr>
+                                    <td>第6周</td>
+                                    <td>10月7日</td>
+                                    <td>蒙特卡洛模拟</td>
+                                    <td>随机模拟、风险分析</td>
+                                    <td>练习5</td>
+                                </tr>
+                                <tr>
+                                    <td>第7周</td>
+                                    <td>10月14日</td>
+                                    <td>期中考试</td>
+                                    <td>理论知识综合测试</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>第8周</td>
+                                    <td>10月21日</td>
+                                    <td>时间序列分析</td>
+                                    <td>趋势分析、季节性调整</td>
+                                    <td>练习6</td>
+                                </tr>
+                                <tr>
+                                    <td>第9周</td>
+                                    <td>10月28日</td>
+                                    <td>优化问题</td>
+                                    <td>线性规划、整数规划</td>
+                                    <td>练习7</td>
+                                </tr>
+                                <tr>
+                                    <td>第10周</td>
+                                    <td>11月4日</td>
+                                    <td>数据挖掘基础</td>
+                                    <td>聚类分析、分类算法</td>
+                                    <td>案例研究2</td>
+                                </tr>
+                                <tr>
+                                    <td>第11周</td>
+                                    <td>11月11日</td>
+                                    <td>商业案例分析</td>
+                                    <td>实际商业问题建模</td>
+                                    <td>项目准备</td>
+                                </tr>
+                                <tr>
+                                    <td>第12周</td>
+                                    <td>11月18日</td>
+                                    <td>项目展示</td>
+                                    <td>学生项目报告</td>
+                                    <td>期末项目</td>
+                                </tr>
+                                <tr>
+                                    <td>第13周</td>
+                                    <td>11月25日</td>
+                                    <td>课程总结</td>
+                                    <td>知识回顾与展望</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            
-            <div class="resources-grid">
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>教材资料</h3>
-                    <p>主要教材：《Data, Models, and Decisions》</p>
-                    <a href="pages/textbooks.html" class="resource-link">查看详情 <i class="fas fa-arrow-right"></i></a>
-                </div>
-                
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-file-powerpoint"></i>
-                    </div>
-                    <h3>课件PPT</h3>
-                    <p>每周课程的详细讲义和演示文稿</p>
-                    <a href="pages/ppt.html" class="resource-link">下载课件 <i class="fas fa-download"></i></a>
-                </div>
-                
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-sticky-note"></i>
-                    </div>
-                    <h3>学长笔记</h3>
-                    <p>学长整理的学习笔记和经验分享</p>
-                    <a href="https://kerrystudio.feishu.cn/docx/UfMmd6pRtoCxh8xpriRcttOqn1g" class="resource-link" target="_blank">查看笔记 <i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 联系信息 -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <h2>联系老师</h2>
-                    <p>请假或课程相关问题，可以通过以下方式联系老师</p>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-user"></i>
-                        <div>
-                            <h4>线下授课教师</h4>
-                            <p>叶青</p>
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">联系我们</h2>
+                    <p class="section-subtitle">如有问题请随时联系</p>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-grid">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <h3>授课教师</h3>
+                            <p>张教授</p>
+                            <div class="contact-details">
+                                <p><i class="fas fa-envelope"></i> zhang@tsinghua.edu.cn</p>
+                                <p><i class="fas fa-phone"></i> 010-6279-xxxx</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>联系教师</h4>
-                            <p>010-62797769，yeqing@sem.tsinghua.edu.cn</p>
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h3>助教</h3>
+                            <p>李同学</p>
+                            <div class="contact-details">
+                                <p><i class="fas fa-envelope"></i> li@student.tsinghua.edu.cn</p>
+                                <p><i class="fas fa-phone"></i> 134-xxxx-xxxx</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-user-graduate"></i>
-                        <div>
-                            <h4>联系助教</h4>
-                            <p>王元翔 yuanxian22@mails.tsinghua.edu.cn</p>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <div>
-                            <h4>线上授课教师</h4>
-                            <p>孙静</p>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <i class="fas fa-user-cog"></i>
-                        <div>
-                            <h4>线上课程协调老师</h4>
-                            <p>肖勇波，010-62797662<br>
-                            xiaoyb@sem.tsinghua.edu.cn<br>
-                            李华楼 B407</p>
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            <h3>班级管理员</h3>
+                            <p>王同学</p>
+                            <div class="contact-details">
+                                <p><i class="fas fa-envelope"></i> wang@student.tsinghua.edu.cn</p>
+                                <p><i class="fas fa-phone"></i> 138-xxxx-xxxx</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- 页脚 -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">
-                    <svg width="30" height="30" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="18" fill="none" stroke="white" stroke-width="2"/>
-                        <polygon points="12,16 20,8 28,16 28,32 12,32" fill="white"/>
-                        <rect x="16" y="20" width="8" height="8" fill="#6B4C93"/>
-                        <rect x="18" y="22" width="4" height="4" fill="white"/>
-                    </svg>
-                    <span>THU DMD</span>
+                <div class="footer-section">
+                    <h3>DMD 数据模型与决策</h3>
+                    <p>清华大学MBA课程</p>
                 </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="#about">课程介绍</a></li>
+                        <li><a href="#schedule">教学日历</a></li>
+                        <li><a href="pages/resources.html">学习资源</a></li>
+                        <li><a href="#contact">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 清华大学MBA DMD课程. 保留所有权利.</p>
             </div>
         </div>
     </footer>
 
+    <!-- JavaScript -->
     <script src="assets/js/script.js"></script>
 </body>
 </html>

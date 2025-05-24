@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMD网站诊断工具</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            line-height: 1.6; 
+            background: #f5f5f5;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #6B4C93; text-align: center; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .section h2 { margin-top: 0; color: #333; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        .info { color: blue; }
+        pre { background: #f8f8f8; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .test-btn { 
+            background: #6B4C93; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        .test-btn:hover { background: #5a3f7a; }
+        .back-link { 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            color: #6B4C93; 
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .loading { opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回主页</a>
+        
+        <h1>DMD网站诊断工具</h1>
+        <p style="text-align: center; color: #666;">
+            此页面用于诊断网站在不同环境下的兼容性问题
+        </p>
+        
+        <!-- 基础环境信息 -->
+        <div class="section">
+            <h2>🔍 环境信息</h2>
+            <div id="env-info">正在检测...</div>
+        </div>
+        
+        <!-- 外部资源测试 -->
+        <div class="section">
+            <h2>🌐 外部资源访问测试</h2>
+            <button class="test-btn" onclick="testExternalResources()">开始测试</button>
+            <div id="resource-test">点击按钮开始测试外部资源加载情况</div>
+        </div>
+        
+        <!-- 网络状态 -->
+        <div class="section">
+            <h2>📡 网络状态</h2>
+            <div id="network-info">正在检测...</div>
+        </div>
+        
+        <!-- JavaScript功能测试 -->
+        <div class="section">
+            <h2>⚙️ JavaScript功能测试</h2>
+            <button class="test-btn" onclick="testJSFeatures()">测试JS功能</button>
+            <div id="js-test">点击按钮测试JavaScript兼容性</div>
+        </div>
+        
+        <!-- 错误日志 -->
+        <div class="section">
+            <h2>📋 错误日志</h2>
+            <pre id="error-log">暂无错误记录</pre>
+        </div>
+        
+        <!-- 诊断结果 -->
+        <div class="section">
+            <h2>📊 诊断结果</h2>
+            <div id="diagnosis">正在分析...</div>
+        </div>
+    </div>
+
+    <script>
+        // 错误收集
+        const errors = [];
+        window.addEventListener('error', function(e) {
+            const error = {
+                message: e.message,
+                filename: e.filename,
+                lineno: e.lineno,
+                timestamp: new Date().toLocaleString()
+            };
+            errors.push(error);
+            updateErrorLog();
+        });
+
+        // 更新错误日志
+        function updateErrorLog() {
+            const log = document.getElementById('error-log');
+            if (errors.length === 0) {
+                log.textContent = '暂无错误记录 ✅';
+            } else {
+                log.textContent = errors.map(e => 
+                    `[${e.timestamp}] ${e.message} (${e.filename}:${e.lineno})`
+                ).join('\n');
+            }
+        }
+
+        // 检测环境信息
+        function detectEnvironment() {
+            const info = document.getElementById('env-info');
+            const userAgent = navigator.userAgent;
+            
+            const isWeixin = /micromessenger/i.test(userAgent);
+            const isAndroid = /android/i.test(userAgent);
+            const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+            const isMobile = /mobile/i.test(userAgent);
+            
+            let weixinVersion = '';
+            if (isWeixin) {
+                const match = userAgent.match(/micromessenger\/(\d+\.\d+\.\d+)/i);
+                weixinVersion = match ? match[1] : '未知';
+            }
+            
+            info.innerHTML = `
+                <p><strong>当前时间:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>用户代理:</strong> <code>${userAgent}</code></p>
+                <p><strong>是否微信:</strong> <span class="${isWeixin ? 'warning' : 'info'}">${isWeixin ? `是 (v${weixinVersion})` : '否'}</span></p>
+                <p><strong>操作系统:</strong> <span class="info">${isAndroid ? 'Android' : isIOS ? 'iOS' : '其他'}</span></p>
+                <p><strong>设备类型:</strong> <span class="info">${isMobile ? '移动设备' : '桌面设备'}</span></p>
+                <p><strong>屏幕尺寸:</strong> ${window.screen.width} × ${window.screen.height}</p>
+                <p><strong>视窗尺寸:</strong> ${window.innerWidth} × ${window.innerHeight}</p>
+                <p><strong>在线状态:</strong> <span class="${navigator.onLine ? 'success' : 'error'}">${navigator.onLine ? '在线' : '离线'}</span></p>
+            `;
+        }
+
+        // 测试外部资源
+        function testExternalResources() {
+            const testDiv = document.getElementById('resource-test');
+            testDiv.innerHTML = '<p class="loading">正在测试外部资源...</p>';
+            
+            const resources = [
+                {
+                    name: 'Google Fonts',
+                    url: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+                    type: 'css'
+                },
+                {
+                    name: 'Font Awesome',
+                    url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+                    type: 'css'
+                },
+                {
+                    name: 'Google Analytics',
+                    url: 'https://www.googletagmanager.com/gtag/js?id=G-VRZ3B14HZ6',
+                    type: 'js'
+                }
+            ];
+            
+            let results = [];
+            let completed = 0;
+            
+            resources.forEach(resource => {
+                const element = resource.type === 'css' ? 
+                    document.createElement('link') : 
+                    document.createElement('script');
+                
+                if (resource.type === 'css') {
+                    element.rel = 'stylesheet';
+                    element.href = resource.url;
+                } else {
+                    element.src = resource.url;
+                }
+                
+                const startTime = Date.now();
+                
+                element.onload = () => {
+                    const loadTime = Date.now() - startTime;
+                    results.push(`<p class="success">✅ ${resource.name}: 加载成功 (${loadTime}ms)</p>`);
+                    checkComplete();
+                };
+                
+                element.onerror = () => {
+                    const loadTime = Date.now() - startTime;
+                    results.push(`<p class="error">❌ ${resource.name}: 加载失败 (${loadTime}ms)</p>`);
+                    checkComplete();
+                };
+                
+                setTimeout(() => {
+                    if (!element.onload.called && !element.onerror.called) {
+                        results.push(`<p class="warning">⏱️ ${resource.name}: 加载超时 (10s)</p>`);
+                        checkComplete();
+                    }
+                }, 10000);
+                
+                document.head.appendChild(element);
+            });
+            
+            function checkComplete() {
+                completed++;
+                if (completed >= resources.length) {
+                    testDiv.innerHTML = results.join('');
+                    generateDiagnosis();
+                }
+            }
+        }
+
+        // 测试JavaScript功能
+        function testJSFeatures() {
+            const testDiv = document.getElementById('js-test');
+            const tests = [];
+            
+            // ES6 箭头函数
+            try {
+                const arrow = () => 'ES6支持';
+                tests.push(`<p class="success">✅ ES6箭头函数: ${arrow()}</p>`);
+            } catch (e) {
+                tests.push(`<p class="error">❌ ES6箭头函数: 不支持</p>`);
+            }
+            
+            // Promise
+            tests.push(`<p class="${typeof Promise !== 'undefined' ? 'success' : 'error'}">
+                ${typeof Promise !== 'undefined' ? '✅' : '❌'} Promise: ${typeof Promise !== 'undefined' ? '支持' : '不支持'}
+            </p>`);
+            
+            // Fetch API
+            tests.push(`<p class="${typeof fetch !== 'undefined' ? 'success' : 'error'}">
+                ${typeof fetch !== 'undefined' ? '✅' : '❌'} Fetch API: ${typeof fetch !== 'undefined' ? '支持' : '不支持'}
+            </p>`);
+            
+            // IntersectionObserver
+            tests.push(`<p class="${'IntersectionObserver' in window ? 'success' : 'warning'}">
+                ${'IntersectionObserver' in window ? '✅' : '⚠️'} IntersectionObserver: ${'IntersectionObserver' in window ? '支持' : '不支持（已有polyfill）'}
+            </p>`);
+            
+            // requestAnimationFrame
+            tests.push(`<p class="${'requestAnimationFrame' in window ? 'success' : 'warning'}">
+                ${'requestAnimationFrame' in window ? '✅' : '⚠️'} requestAnimationFrame: ${'requestAnimationFrame' in window ? '支持' : '不支持（已有polyfill）'}
+            </p>`);
+            
+            // CSS Grid
+            const supportsGrid = CSS.supports('display', 'grid');
+            tests.push(`<p class="${supportsGrid ? 'success' : 'warning'}">
+                ${supportsGrid ? '✅' : '⚠️'} CSS Grid: ${supportsGrid ? '支持' : '不支持（使用flexbox降级）'}
+            </p>`);
+            
+            testDiv.innerHTML = tests.join('');
+        }
+
+        // 检测网络状态
+        function checkNetworkStatus() {
+            const info = document.getElementById('network-info');
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            let networkInfo = `<p><strong>在线状态:</strong> <span class="${navigator.onLine ? 'success' : 'error'}">${navigator.onLine ? '在线' : '离线'}</span></p>`;
+            
+            if (connection) {
+                networkInfo += `
+                    <p><strong>连接类型:</strong> ${connection.effectiveType || '未知'}</p>
+                    <p><strong>下行速度:</strong> ${connection.downlink ? connection.downlink + ' Mbps' : '未知'}</p>
+                    <p><strong>延迟:</strong> ${connection.rtt ? connection.rtt + ' ms' : '未知'}</p>
+                `;
+            } else {
+                networkInfo += `<p class="warning">⚠️ 无法获取详细网络信息</p>`;
+            }
+            
+            info.innerHTML = networkInfo;
+        }
+
+        // 生成诊断结果
+        function generateDiagnosis() {
+            const diagnosis = document.getElementById('diagnosis');
+            const userAgent = navigator.userAgent;
+            const isWeixin = /micromessenger/i.test(userAgent);
+            const isAndroid = /android/i.test(userAgent);
+            
+            let result = '<h3>诊断结果:</h3>';
+            
+            if (isWeixin && isAndroid) {
+                result += `
+                    <div class="warning">
+                        <p><strong>⚠️ 检测到Android微信环境</strong></p>
+                        <p>这是最容易出现兼容性问题的环境组合。</p>
+                    </div>
+                `;
+            }
+            
+            if (errors.length > 0) {
+                result += `
+                    <div class="error">
+                        <p><strong>❌ 发现JavaScript错误</strong></p>
+                        <p>页面存在${errors.length}个错误，可能影响正常使用。</p>
+                    </div>
+                `;
+            } else {
+                result += `
+                    <div class="success">
+                        <p><strong>✅ JavaScript运行正常</strong></p>
+                        <p>没有发现明显的JavaScript错误。</p>
+                    </div>
+                `;
+            }
+            
+            result += `
+                <h4>建议:</h4>
+                <ul>
+                    <li>如果外部资源加载失败，建议使用已优化的无依赖版本</li>
+                    <li>如果仍有问题，请截图此页面内容并反馈给管理员</li>
+                    <li>可以尝试清除微信缓存后重新访问</li>
+                    <li>建议在不同网络环境下测试（WiFi vs 移动网络）</li>
+                </ul>
+            `;
+            
+            diagnosis.innerHTML = result;
+        }
+
+        // 页面加载完成后执行
+        window.addEventListener('load', function() {
+            detectEnvironment();
+            checkNetworkStatus();
+            
+            // 监听网络状态变化
+            window.addEventListener('online', () => {
+                checkNetworkStatus();
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div style="background:green;color:white;padding:10px;text-align:center;">网络已连接</div>'
+                );
+            });
+            
+            window.addEventListener('offline', () => {
+                checkNetworkStatus();
+                document.body.insertAdjacentHTML('afterbegin', 
+                    '<div style="background:red;color:white;padding:10px;text-align:center;">网络已断开</div>'
+                );
+            });
+        });
+    </script>
+</body>
+</html>

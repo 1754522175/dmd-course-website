@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>学习资源 - DMD 数据模型与决策</title>
+    <title>学习资源 | DMD 数据模型与决策</title>
     
     <!-- 预连接优化 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.google-analytics.com">
-    
-    <!-- DNS预获取 -->
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VRZ3B14HZ6"></script>
@@ -25,24 +20,24 @@
     <!-- 样式表 - 本地优先 -->
     <link rel="stylesheet" href="../assets/css/style.css">
     
-    <!-- 字体加载 - 带fallback -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- 移除外部字体和图标库依赖 -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Font Awesome - 带fallback -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"></noscript>
+    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"></noscript> -->
     
     <!-- 内联关键CSS样式 -->
     <style>
         /* 关键样式 - 确保页面基本可用 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", 'Segoe UI', Roboto, sans-serif; 
             line-height: 1.6; 
             color: #333; 
             background: #fff;
             overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
         .navbar { 
@@ -51,9 +46,8 @@
             left: 0; 
             right: 0; 
             background: rgba(255,255,255,0.95); 
-            backdrop-filter: blur(10px);
-            z-index: 1000; 
             border-bottom: 1px solid #e5e7eb;
+            z-index: 1000; 
         }
         .nav-container { 
             display: flex; 
@@ -62,7 +56,7 @@
             height: 70px; 
             padding: 0 1rem;
         }
-        .page-header { padding: 120px 0 60px; background: #6B4C93; color: white; text-align: center; }
+        .main-content { padding: 100px 0 40px; }
         .btn { 
             display: inline-flex; 
             align-items: center; 
@@ -75,17 +69,26 @@
         .btn-primary { background: #6B4C93; color: white; }
         .btn-secondary { background: white; color: #6B4C93; border: 1px solid #6B4C93; }
         
+        /* 替换图标字体为简单符号 */
+        .fas.fa-download::before { content: "⬇ "; }
+        .fas.fa-external-link-alt::before { content: "↗ "; }
+        .fas.fa-book::before { content: "📚 "; }
+        .fas.fa-file-powerpoint::before { content: "📊 "; }
+        .fas.fa-sticky-note::before { content: "📝 "; }
+        .fas.fa-home::before { content: "🏠 "; }
+        .fas.fa-arrow-left::before { content: "← "; }
+        
         /* 移动端优化 */
         @media (max-width: 768px) {
             .nav-menu { display: none; }
-            .page-header { padding: 100px 0 40px; }
-            .header-content h1 { font-size: 2rem; }
-            .textbook-card { flex-direction: column; text-align: center; }
-            .materials-grid { grid-template-columns: 1fr; }
+            .main-content { padding: 80px 0 20px; }
             .container { padding: 0 1rem; }
         }
         
-        /* 错误处理样式 */
+        /* 汉堡菜单图标 */
+        .nav-toggle span::before { content: "☰"; font-size: 1.2rem; }
+        
+        /* 错误状态 */
         .error-fallback { 
             padding: 2rem; 
             text-align: center; 
@@ -102,12 +105,14 @@
         // 全局错误处理
         window.addEventListener('error', function(e) {
             console.error('页面错误:', e.error);
+            // 不中断页面显示
         });
         
         // 资源加载错误处理
         window.addEventListener('error', function(e) {
             if (e.target.tagName === 'LINK' || e.target.tagName === 'SCRIPT') {
                 console.warn('外部资源加载失败:', e.target.src || e.target.href);
+                // 继续显示页面
             }
         }, true);
         
@@ -123,660 +128,217 @@
         window.addEventListener('online', () => location.reload());
         window.addEventListener('offline', checkConnection);
     </script>
-    <!-- 顶部导航 -->
+
+    <!-- 导航栏 -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <svg class="university-logo" width="40" height="40" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="18" fill="none" stroke="#6B4C93" stroke-width="2"/>
-                    <polygon points="12,16 20,8 28,16 28,32 12,32" fill="#6B4C93"/>
-                    <rect x="16" y="20" width="8" height="8" fill="white"/>
-                    <rect x="18" y="22" width="4" height="4" fill="#6B4C93"/>
-                </svg>
-                <div class="brand-text">
-                    <span class="university">清华大学</span>
-                    <span class="program">MBA Program</span>
-                </div>
+                <a href="../index.html" class="brand-link">DMD</a>
             </div>
-            
-            <ul class="nav-menu">
-                <li><a href="../index.html#home" class="nav-link">首页</a></li>
-                <li><a href="../index.html#syllabus" class="nav-link">教学日历</a></li>
-                <li><a href="../index.html#resources" class="nav-link active">学习资源</a></li>
-                <li><a href="../index.html#contact" class="nav-link">联系老师</a></li>
-            </ul>
-            
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html#about" class="nav-link">课程介绍</a>
+                <a href="../index.html#schedule" class="nav-link">教学日历</a>
+                <a href="resources.html" class="nav-link active">学习资源</a>
+                <a href="../index.html#contact" class="nav-link">联系我们</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
                 <span></span>
             </div>
         </div>
     </nav>
 
-    <!-- 页面标题 -->
-    <section class="page-header">
+    <!-- 主内容 -->
+    <main class="main-content">
         <div class="container">
-            <div class="header-content">
+            <!-- 返回链接 -->
+            <div class="breadcrumb">
+                <a href="../index.html" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    返回主页
+                </a>
+            </div>
+
+            <!-- 页面标题 -->
+            <div class="page-header">
                 <h1>学习资源</h1>
-                <p>丰富的学习材料和工具，助力你的DMD学习之旅</p>
-                <nav class="breadcrumb">
-                    <a href="../index.html">首页</a>
-                    <span>/</span>
-                    <span>学习资源</span>
-                </nav>
+                <p>DMD 数据模型与决策课程相关资料</p>
             </div>
-        </div>
-    </section>
 
-    <!-- 教材资料 -->
-    <section class="textbooks">
-        <div class="container">
-            <div class="section-header">
-                <h2>课程教材</h2>
-                <p>权威教材，构建扎实的理论基础</p>
-            </div>
-            
-            <div class="textbook-grid">
-                <div class="textbook-card featured">
-                    <div class="book-cover">
-                        <div class="book-spine"></div>
-                        <div class="book-front">
-                            <div class="book-title">Data, Models & Decisions</div>
-                            <div class="book-subtitle">The Fundamentals of Management Science</div>
-                            <div class="book-authors">Bertsimas & Freund</div>
-                        </div>
-                    </div>
-                    <div class="book-info">
-                        <h3>Data, Models, and Decisions</h3>
-                        <p class="book-meta">主教材 • 英文版 • 195MB</p>
-                        <p class="book-description">
-                            这是本课程的核心教材，由MIT教授Dimitris Bertsimas和Robert Freund编写。
-                            该书系统性地介绍了数据分析、建模和决策制定的理论与实践。
-                        </p>
-                        <div class="book-features">
-                            <span class="feature-tag">权威教材</span>
-                            <span class="feature-tag">案例丰富</span>
-                            <span class="feature-tag">理论实践结合</span>
-                        </div>
-                        <div class="book-actions">
-                            <a href="../DMD教材——Data,Models,and Decisions-The Fundamentals of Management Science .pdf" 
-                               class="btn btn-primary" target="_blank">
-                                <i class="fas fa-download"></i>
-                                下载PDF (195MB)
-                            </a>
-                            <button class="btn btn-secondary book-preview">
-                                <i class="fas fa-eye"></i>
-                                预览目录
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
+            <!-- 教材部分 -->
+            <section class="textbook-section">
+                <h2>📚 指定教材</h2>
                 <div class="textbook-card">
-                    <div class="book-cover chinese">
-                        <div class="book-spine"></div>
-                        <div class="book-front">
-                            <div class="book-title">数据模型与决策</div>
-                            <div class="book-subtitle">管理科学基础</div>
-                            <div class="book-authors">中文版</div>
-                        </div>
-                    </div>
-                    <div class="book-info">
-                        <h3>数据模型与决策 - 管理科学基础</h3>
-                        <p class="book-meta">辅助教材 • 中文版 • 43MB</p>
-                        <p class="book-description">
-                            英文主教材的中文版本，便于理解复杂概念和术语。
-                            适合需要中文辅助理解的同学使用。
+                    <div class="textbook-info">
+                        <h3>Data, Models, and Decisions</h3>
+                        <p class="textbook-authors">作者: Dimitris Bertsimas, Robert M. Freund</p>
+                        <p class="textbook-publisher">出版社: South-Western College Pub</p>
+                        <p class="textbook-edition">版次: 第2版</p>
+                        <p class="textbook-description">
+                            本书是MIT斯隆商学院的经典教材，系统介绍了商业决策中的定量分析方法，
+                            包括统计学、概率论、回归分析、决策分析等核心内容。
                         </p>
-                        <div class="book-features">
-                            <span class="feature-tag">中文版本</span>
-                            <span class="feature-tag">理解辅助</span>
-                            <span class="feature-tag">概念清晰</span>
+                    </div>
+                    <div class="textbook-actions">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-external-link-alt"></i>
+                            购买链接
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 学习材料 -->
+            <section class="materials-section">
+                <h2>📖 学习材料</h2>
+                <div class="materials-grid">
+                    <div class="material-card">
+                        <div class="material-icon">
+                            <i class="fas fa-file-powerpoint"></i>
                         </div>
-                        <div class="book-actions">
-                            <a href="../DMD教材——数据模型与决策-管理科学基础.pdf" 
-                               class="btn btn-primary" target="_blank">
+                        <h3>课程讲义</h3>
+                        <p>每周课程的详细讲义和PPT</p>
+                        <div class="material-files">
+                            <a href="#" class="file-link">
                                 <i class="fas fa-download"></i>
-                                下载PDF (43MB)
+                                第1周 - 统计基础
                             </a>
-                            <button class="btn btn-secondary book-preview">
-                                <i class="fas fa-eye"></i>
-                                预览目录
-                            </button>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                第2周 - 概率论
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                第3周 - 推断统计
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="material-card">
+                        <div class="material-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h3>练习题</h3>
+                        <p>配套练习题和答案解析</p>
+                        <div class="material-files">
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                练习1 - 描述性统计
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                练习2 - 概率计算
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                练习3 - 假设检验
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="material-card">
+                        <div class="material-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>案例研究</h3>
+                        <p>实际商业案例分析材料</p>
+                        <div class="material-files">
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                案例1 - 市场研究分析
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                案例2 - 投资决策模型
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-download"></i>
+                                案例3 - 供应链优化
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="material-card">
+                        <div class="material-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3>软件工具</h3>
+                        <p>数据分析软件使用指南</p>
+                        <div class="material-files">
+                            <a href="#" class="file-link">
+                                <i class="fas fa-external-link-alt"></i>
+                                Excel 数据分析插件
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-external-link-alt"></i>
+                                R语言入门教程
+                            </a>
+                            <a href="#" class="file-link">
+                                <i class="fas fa-external-link-alt"></i>
+                                Python数据科学包
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    <!-- 课件资料 -->
-    <section class="course-materials">
-        <div class="container">
-            <div class="section-header">
-                <h2>课件资料</h2>
-                <p>每周课程的详细讲义和演示文稿</p>
-            </div>
-            
-            <div class="materials-grid">
-                <div class="material-folder">
-                    <div class="folder-icon">
-                        <i class="fas fa-folder"></i>
-                        <span class="folder-label">PPT</span>
+            <!-- 在线资源 -->
+            <section class="online-resources">
+                <h2>🌐 在线资源</h2>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <h3>Khan Academy Statistics</h3>
+                        <p>免费的统计学在线课程</p>
+                        <a href="https://www.khanacademy.org/math/statistics-probability" class="btn btn-secondary" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            访问网站
+                        </a>
                     </div>
-                    <h3>教师PPT</h3>
-                    <p>包含所有周次的课程演示文稿</p>
-                    <div class="folder-stats">
-                        <span><i class="fas fa-file-powerpoint"></i> 12个文件</span>
-                        <span><i class="fas fa-clock"></i> 最近更新</span>
+                    <div class="resource-card">
+                        <h3>Coursera - Business Analytics</h3>
+                        <p>商业分析相关课程</p>
+                        <a href="https://www.coursera.org/browse/business" class="btn btn-secondary" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            访问网站
+                        </a>
                     </div>
-                    <a href="../教师PPT/" class="btn btn-primary">
-                        <i class="fas fa-folder-open"></i>
-                        查看文件夹
-                    </a>
-                </div>
-                
-                <div class="material-item">
-                    <div class="material-icon">
-                        <i class="fas fa-file-powerpoint"></i>
-                    </div>
-                    <div class="material-info">
-                        <h4>第1周：课程导论</h4>
-                        <p>课程介绍、学习目标、评分标准</p>
-                        <span class="file-size">2.3MB</span>
-                    </div>
-                    <div class="material-actions">
-                        <button class="btn-icon"><i class="fas fa-download"></i></button>
-                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                    <div class="resource-card">
+                        <h3>MIT OpenCourseWare</h3>
+                        <p>MIT免费课程资源</p>
+                        <a href="https://ocw.mit.edu/" class="btn btn-secondary" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            访问网站
+                        </a>
                     </div>
                 </div>
-                
-                <div class="material-item">
-                    <div class="material-icon">
-                        <i class="fas fa-file-powerpoint"></i>
-                    </div>
-                    <div class="material-info">
-                        <h4>第2周：数据分析基础</h4>
-                        <p>描述性统计、数据可视化方法</p>
-                        <span class="file-size">4.1MB</span>
-                    </div>
-                    <div class="material-actions">
-                        <button class="btn-icon"><i class="fas fa-download"></i></button>
-                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
-                    </div>
-                </div>
-                
-                <div class="material-item">
-                    <div class="material-icon">
-                        <i class="fas fa-file-powerpoint"></i>
-                    </div>
-                    <div class="material-info">
-                        <h4>第3周：概率与统计</h4>
-                        <p>概率分布、假设检验、置信区间</p>
-                        <span class="file-size">3.7MB</span>
-                    </div>
-                    <div class="material-actions">
-                        <button class="btn-icon"><i class="fas fa-download"></i></button>
-                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
-                    </div>
-                </div>
-            </div>
+            </section>
         </div>
-    </section>
+    </main>
 
-    <!-- 实践工具 -->
-    <section class="tools-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>实践工具</h2>
-                <p>课程推荐的分析工具和软件</p>
-            </div>
-            
-            <div class="tools-grid">
-                <div class="tool-card excel">
-                    <div class="tool-icon">
-                        <i class="fas fa-file-excel"></i>
-                    </div>
-                    <h3>Microsoft Excel</h3>
-                    <p>数据分析、图表制作、基础统计</p>
-                    <div class="tool-features">
-                        <span>数据透视表</span>
-                        <span>统计函数</span>
-                        <span>图表工具</span>
-                    </div>
-                    <div class="tool-actions">
-                        <a href="#" class="btn btn-primary">下载模板</a>
-                        <a href="#" class="btn btn-secondary">查看教程</a>
-                    </div>
-                </div>
-                
-                <div class="tool-card r">
-                    <div class="tool-icon">
-                        <i class="fab fa-r-project"></i>
-                    </div>
-                    <h3>R语言</h3>
-                    <p>统计计算、数据可视化、高级分析</p>
-                    <div class="tool-features">
-                        <span>统计分析</span>
-                        <span>数据挖掘</span>
-                        <span>可视化</span>
-                    </div>
-                    <div class="tool-actions">
-                        <a href="#" class="btn btn-primary">安装指南</a>
-                        <a href="#" class="btn btn-secondary">示例代码</a>
-                    </div>
-                </div>
-                
-                <div class="tool-card python">
-                    <div class="tool-icon">
-                        <i class="fab fa-python"></i>
-                    </div>
-                    <h3>Python</h3>
-                    <p>机器学习、数据科学、自动化分析</p>
-                    <div class="tool-features">
-                        <span>Pandas</span>
-                        <span>Scikit-learn</span>
-                        <span>Matplotlib</span>
-                    </div>
-                    <div class="tool-actions">
-                        <a href="#" class="btn btn-primary">环境配置</a>
-                        <a href="#" class="btn btn-secondary">Jupyter笔记</a>
-                    </div>
-                </div>
-                
-                <div class="tool-card tableau">
-                    <div class="tool-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Tableau</h3>
-                    <p>专业数据可视化、仪表板制作</p>
-                    <div class="tool-features">
-                        <span>交互图表</span>
-                        <span>仪表板</span>
-                        <span>数据连接</span>
-                    </div>
-                    <div class="tool-actions">
-                        <a href="#" class="btn btn-primary">学生版</a>
-                        <a href="#" class="btn btn-secondary">使用指南</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 页脚 -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">
-                    <svg width="30" height="30" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="18" fill="none" stroke="white" stroke-width="2"/>
-                        <polygon points="12,16 20,8 28,16 28,32 12,32" fill="white"/>
-                        <rect x="16" y="20" width="8" height="8" fill="#6B4C93"/>
-                        <rect x="18" y="22" width="4" height="4" fill="white"/>
-                    </svg>
-                    <span>清华大学 MBA Program</span>
+                <div class="footer-section">
+                    <h3>DMD 数据模型与决策</h3>
+                    <p>清华大学MBA课程</p>
                 </div>
-                
-                <div class="footer-links">
-                    <a href="#">隐私政策</a>
-                    <a href="#">使用条款</a>
-                    <a href="#">技术支持</a>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../index.html#about">课程介绍</a></li>
+                        <li><a href="../index.html#schedule">教学日历</a></li>
+                        <li><a href="resources.html">学习资源</a></li>
+                        <li><a href="../index.html#contact">联系我们</a></li>
+                    </ul>
                 </div>
-                
-                <div class="footer-copyright">
-                    <p>&copy; 2024 清华大学. 保留所有权利.</p>
-                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 清华大学MBA DMD课程. 保留所有权利.</p>
             </div>
         </div>
     </footer>
 
+    <!-- JavaScript -->
     <script src="../assets/js/script.js"></script>
-    
-    <!-- 页面特定样式 -->
-    <style>
-        .page-header {
-            padding: 120px 0 60px;
-            background: linear-gradient(135deg, var(--purple-600) 0%, var(--purple-800) 100%);
-            color: white;
-            text-align: center;
-        }
-        
-        .header-content h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        
-        .breadcrumb {
-            margin-top: 2rem;
-            opacity: 0.8;
-        }
-        
-        .breadcrumb a {
-            color: white;
-            text-decoration: none;
-        }
-        
-        .breadcrumb span {
-            margin: 0 0.5rem;
-        }
-        
-        .textbooks {
-            padding: 4rem 0;
-            background: white;
-        }
-        
-        .textbook-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 3rem;
-        }
-        
-        .textbook-card {
-            display: flex;
-            gap: 2rem;
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--gray-200);
-        }
-        
-        .textbook-card.featured {
-            border: 2px solid var(--primary-color);
-        }
-        
-        .book-cover {
-            position: relative;
-            width: 120px;
-            height: 160px;
-            flex-shrink: 0;
-            transform: perspective(300px) rotateY(-15deg);
-        }
-        
-        .book-spine,
-        .book-front {
-            position: absolute;
-            border-radius: 4px;
-        }
-        
-        .book-spine {
-            width: 12px;
-            height: 160px;
-            background: var(--primary-color);
-            left: -6px;
-            transform: rotateY(90deg);
-        }
-        
-        .book-front {
-            width: 120px;
-            height: 160px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border: 1px solid var(--gray-300);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-            text-align: center;
-        }
-        
-        .book-front.chinese {
-            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
-        }
-        
-        .book-title {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-        }
-        
-        .book-subtitle {
-            font-size: 0.7rem;
-            color: var(--gray-600);
-            margin-bottom: 1rem;
-        }
-        
-        .book-authors {
-            font-size: 0.6rem;
-            color: var(--gray-500);
-            font-style: italic;
-        }
-        
-        .book-info {
-            flex: 1;
-        }
-        
-        .book-meta {
-            color: var(--gray-500);
-            margin-bottom: 1rem;
-        }
-        
-        .book-features {
-            display: flex;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-        
-        .feature-tag {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-        }
-        
-        .book-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .course-materials {
-            padding: 4rem 0;
-            background: var(--gray-50);
-        }
-        
-        .materials-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 1.5rem;
-        }
-        
-        .material-folder {
-            grid-column: span 2;
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .folder-icon {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-        
-        .folder-icon i {
-            font-size: 4rem;
-            color: var(--primary-color);
-        }
-        
-        .folder-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: white;
-        }
-        
-        .folder-stats {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-            color: var(--gray-600);
-        }
-        
-        .material-item {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .material-icon i {
-            font-size: 2rem;
-            color: #D97706;
-        }
-        
-        .material-info h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .material-info p {
-            font-size: 0.9rem;
-            color: var(--gray-600);
-            margin-bottom: 0.5rem;
-        }
-        
-        .file-size {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-        }
-        
-        .material-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: auto;
-        }
-        
-        .btn-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--gray-300);
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-icon:hover {
-            background: var(--gray-50);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        
-        .tools-section {
-            padding: 4rem 0;
-            background: white;
-        }
-        
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-        
-        .tool-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .tool-card.excel:hover { border-color: #107C41; }
-        .tool-card.r:hover { border-color: #276DC3; }
-        .tool-card.python:hover { border-color: #3776AB; }
-        .tool-card.tableau:hover { border-color: #E97627; }
-        
-        .tool-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 1rem;
-            font-size: 2rem;
-        }
-        
-        .excel .tool-icon { background: #107C41; color: white; }
-        .r .tool-icon { background: #276DC3; color: white; }
-        .python .tool-icon { background: #3776AB; color: white; }
-        .tableau .tool-icon { background: #E97627; color: white; }
-        
-        .tool-features {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-        
-        .tool-features span {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-        }
-        
-        .tool-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-        
-        @media (max-width: 768px) {
-            .textbook-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .textbook-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .materials-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .material-folder {
-                grid-column: span 1;
-            }
-            
-            .book-actions,
-            .tool-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
 </body>
 </html>
